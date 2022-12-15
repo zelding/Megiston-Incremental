@@ -51,7 +51,7 @@ function closeNotification(elementId) {
 
 function format() {
 	var args = arguments;
-	if (args.length <= 1) { 
+	if (args.length <= 1) {
 		return args;
 	}
 	var result = args[0];
@@ -69,12 +69,12 @@ function formatValue(value, prec=0) {
 	if (value.lt(10000)) {
 		if (Number.isInteger(value.mag))
 			return (value).toFixed(0);
-		else 
+		else
 			return (value).toFixed(prec);
 	}
 	var mantissa = value.mantissa.toFixed(prec);
 	var power = value.e;
-		
+
 	if (power > 10000) {
 		if (value.layer < 2) {
 			return "e" + formatValue(new Decimal(value.e), prec);
@@ -145,7 +145,7 @@ function getMaxTriangleCost(bought, type) {
 			let maxAmount = reverseTriangleCost(resource2, type);
 			amount = maxAmount.sub(bought);
 		}
-	} 
+	}
 	do {
 		cost = getTriangleCost(bought.add(amount.add(1)), type);
 		if (resource.gte(cost)) {
@@ -223,12 +223,12 @@ function getTriangleCost(bought, type = 1) {
 			cost = Decimal.layeradd(cost, 2);
 	}
 	if (type==2) {
-		if (bought.eq(1)) 
+		if (bought.eq(1))
 			cost = new Decimal(3);
-		else 
+		else
 			cost = cost.pow(1.3);
 	}
-	if (cost.lt(1)) 
+	if (cost.lt(1))
 		cost = new Decimal(1);
 	return cost;
 }
@@ -246,7 +246,7 @@ function getTriangleBuyAmount() {
 	buyAmount = Decimal.max(0.01, buyAmount);
 	if (game.achievements[4])
 		buyAmount = buyAmount.add(0.01);
-	
+
 	return buyAmount;
 }
 
@@ -265,7 +265,7 @@ function getShardCost(bought) {
 			scale = scale.sub(0.1);
 		cost = bought.sub(16).pow(scale);
 	}
-	if (cost.lt(0)) 
+	if (cost.lt(0))
 		cost = new Decimal(0);
 	if (checkUpgrade('flip', 4))
 		cost = cost.sub(0.2);
@@ -303,7 +303,7 @@ function getPercentage(vPrev, vCur, vNext, recursive=false) {
 	if (vCur.gte(vNext)) return new Decimal(100);
 	if (!recursive && vNext.lt(2e4))
 		return Decimal.min(1, Decimal.max(0, vCur.div(vNext))).mul(100).floor();
-	
+
 	if (vCur.lte(vPrev)) return new Decimal(0);
 	let diff = vNext.div(vPrev);
 	if (diff.lt(1e3)) {
@@ -372,7 +372,7 @@ function update() {
 		$('#squareButton').prop('disabled', !squares.gte(1));
 		$('#combined').text(format('Times combined: {0}', formatValue(game.squares.combined, 2)));
 		$('#combinedSquares').text(format('▢: {0}', formatValue(game.squares.value, 2)));
-		
+
 		let cutBought = game.cut.bought;
 		let cutBuyAmount = new Decimal(0.1);
 		let cutValue = cutBought.mul(cutBuyAmount).add(1);
@@ -382,7 +382,7 @@ function update() {
 		$('#cutSquaresBuyAmount').text(format('Buy {0}', formatValue(cutBuyAmount, 2)));
 		$('#cutSquaresIncome').text(format('x{0} ▲ index', formatValue(cutIncome,2)));
 	}
-	
+
 	// shards
 	let trianglesValue = new Decimal(1);
 	let shardsValue = new Decimal(0);
@@ -403,26 +403,26 @@ function update() {
 		shardsValue = shards.mul(shardsBuyAmount);
 		if (checkUpgrade('flip', 7))
 			shardsValue = shardsValue.add(0.05);
-		
+
 		if (checkUpgrade('flip', 6))
 			trianglesValue = trianglesValue.add(shards.mul(0.4));
-		
+
 		//shardsValue = Decimal.min(1,shardsValue);
 		game.shards.value = shardsValue;
-		
+
 		//shardsBuyAmount = Decimal.min(shardsBuyAmount, new Decimal(1).sub(shardsValue));
 		$('#shards').attr('value', formatValue(game.shards.value, 2));
 		$('#shardsBuyAmount').text(format('Buy {0}', formatValue(shardsBuyAmount, 2)));
 		//$('#shardsButton').text(format('get 0.1 shard for {0} ▲', flippedAmount));
 	}
-	
+
 	//squares init
 	if (typeof(game.squares) == 'undefined' && shardsValue.gte(1)) {
 		if (typeof(game.challenge) == 'undefined')
 			notify('Here we go, finally we can start dealing with squares. Let\'s assemble the first one', 30000);
 			initSquares();
 	}
-	
+
 	//flip init
 	let trianglesBuyAmount = getTriangleBuyAmount();
 	if (typeof(game.flip) == 'undefined') {
@@ -448,7 +448,7 @@ function update() {
 		if (checkUpgrade('flip', 10))
 			trianglesValue = trianglesValue.add(game.achievements.reduce((a,b)=>a+b,0) * 0.01);
 	}
-	
+
 	let triangles2income = new Decimal(1);
 	//triangles2
 	if (typeof(game.triangles2) != 'undefined') {
@@ -467,7 +467,7 @@ function update() {
 		let cost2 = getTriangleCost(game.triangles2.bought.add(1), 2);
 		$('#triangles2Cost').text(format('Cost: {0} ▢', formatValue(cost2, 2)));
 	}
-	
+
 	//triangles
 	game.triangles.value = trianglesValue.add(game.triangles.bought.mul(trianglesBuyAmount)).mul(triangles2income).mul(1000).floor().div(1000);
 	$('#triangles').attr('value', formatValue(game.triangles.value, 2));
@@ -492,7 +492,7 @@ function update() {
 	} else
 		$('#trianglesIncome').text(format('{0} per tick', formatValue(income, 2)));
 	game.triangles.income = income;
-	
+
 	let resource = game.resource;
 	if (resource.gte(1.78e308) && (typeof(game.halfflip) == 'undefined' || shardsValue.lt(0.5))) {
 		resource = new Decimal(1.78e308);
@@ -500,7 +500,7 @@ function update() {
 	} else
 		$('#resource').text('Resource: ' + formatValue(game.resource, 2));
 	game.resource = resource;
-	
+
 	if (triangleIndex.neq(1)) {
 		$('#trianglesLabel').html(format('▲<sub>{0}</sub>', formatValue(triangleIndex, 2)));
 		//$('#shardsEffect').text('Increases ▲ index, but reduces amount per purchase');
@@ -508,12 +508,12 @@ function update() {
 	else {
 		$('#trianglesLabel').html('▲');
 	}
-	
+
 	// flip
 	let flippedAmount = getFlippedAmount();
 	$('#flipButton').text(format('Flip ▲ to get {0} ▼', formatValue(flippedAmount, 2)));
 	$('#flipButton').prop('disabled', flippedAmount.eq(0));
-	
+
 	// triangle cost bar
 	let triangleCost = getTriangleCost(game.triangles.bought.add(1));
 	if (triangleCost.gte(1.78e308) && (typeof(game.halfflip) == 'undefined' || shardsValue.lt(0.5))) {
@@ -525,7 +525,7 @@ function update() {
 		var percentage = getPercentage(income, game.resource, triangleCost);
 		$('#trianglesCost').html(format('<div id="trianglesCostBar" class="progress-bar-cost" style="width:{0}%;"></div>{1}', percentage, triangleCostText));
 	}
-	
+
 	// shard cost bar
 	if (typeof(game.shards) != 'undefined') {
 		let shardPrevCost = getShardCost(game.shards.bought);
@@ -534,7 +534,7 @@ function update() {
 		var percentage = getPercentage(shardPrevCost, game.triangles.value, shardCost);
 		$('#shardsCost').html(format('<div id="shardsCostBar" class="progress-bar-cost" style="width:{0}%;"></div>{1}', percentage, shardsCostText));
 	}
-	
+
 	// cut cost bar
 	if (typeof(game.cut) != 'undefined') {
 		let cutPrevCost = getCutCost(game.cut.bought);
@@ -543,7 +543,7 @@ function update() {
 		var percentage = getPercentage(cutPrevCost, game.squares.value, cutCost);
 		$('#cutSquaresCost').html(format('<div id="cutCostBar" class="progress-bar-cost" style="width:{0}%;"></div>{1}', percentage, cutCostText));
 	}
-	
+
 	// triangles2 cost bar
 	if (typeof(game.triangles2) != 'undefined') {
 		let triangles2PrevCost = getTriangleCost(game.triangles2.bought, 2);
@@ -552,14 +552,14 @@ function update() {
 		var percentage = getPercentage(triangles2PrevCost, game.squares.value, triangles2Cost);
 		$('#triangles2Cost').html(format('<div id="triangles2CostBar" class="progress-bar-cost" style="width:{0}%;"></div>{1}', percentage, triangles2CostText));
 	}
-	
+
 	//halfflip
 	if (typeof(game.halfflip) != 'undefined') {
 		if ((checkUpgrade('flip', 13) || game.halfflip.upgrades[0] == 1) && flippedAmount.gt(10)) {
 			game.flip.value = game.flip.value.add(flippedAmount.div(10).floor());
 		}
 	}
-	
+
 	// achievements
 	if (!game.achievements[0] && typeof(game.flip) != 'undefined' && game.flip.flipped.gt(0))
 		getAchievement(0);
@@ -604,6 +604,7 @@ function update() {
 			}
 		}
 	}
+
 	if (!game.achievements[6] && game.resource.gte("1.8e308"))
 		getAchievement(6);
 	if (!game.achievements[8] && game.resource.gte("e1e10"))
@@ -623,7 +624,7 @@ function update() {
 		getAchievement(15);
 	if (!game.achievements[17] && typeof(game.squares) != 'undefined' && game.squares.pyramidRows >= 3)
 		getAchievement(17);
-	
+
 	// auto
 	if (game.triangles.auto) {
 		buyMax('triangles', false);
@@ -648,15 +649,15 @@ function talkInfinity() {
 		$('button').each(function(){$(this).prop('disabled',true);});
 		if (typeof(game.challenge) == 'undefined')
 			notify('What if we try to do half-flip?', 30000);
-		var html = $('#root').html(); 
+		var html = $('#root').html();
 		htmlflip = html.replace(/▲/g, '<div class=\'half-flip\'>▲</div>');
 		htmlflip = htmlflip.replace(/▼/g, '<div class=\'half-flip\'>▼</div>');
 		htmlflip = htmlflip.replace(/▫<sup>▫<\/sup><sub>□<\/sub>/g, '<div class=\'half-flip\'>▫<sup>▫</sup><sub>□</sub></div>');
-		
+
 		$('#root').html(htmlflip);
 		$('.half-flip').each(function(){$(this).toggleClass('rt90');})
 		sleep(4500).then(()=>{
-			
+
 			//$(".wipe-transition").toggleClass("wipe-trans");
 			//$('#root').toggle('explode');
 			$('.half-flip').each(function(){$(this).toggle('explode');});
@@ -672,7 +673,7 @@ function talkInfinity() {
 				$('#shardsBuyMax').prop('disabled', true);
 				halfFlip();
 				//$('#root').toggle('explode');
-				
+
 			});
 			sleep(3000).then(()=>{
 				$('#root').toggle('explode');
@@ -701,7 +702,7 @@ function getFlippedAmount(a) {
 	let resource = a?a:game.resource;
 	if (resource.lte(0)) return new Decimal(0);
 	let amount = Decimal.max(resource.log10().sub(2).floor(), 0);
-	if (amount.gt(0) && game.achievements[1]) 
+	if (amount.gt(0) && game.achievements[1])
 		amount = amount.add(1);
 	amount = amount.mul(getFlipMult());
 	return amount;
@@ -736,7 +737,7 @@ function flip() {
 	}
 	game.flip.flipped = game.flip.flipped.add(flipped);
 	game.flip.value = game.flip.value.add(flippedAmount);
-	
+
 	game.resource = new Decimal(1);
 	game.triangles.bought = new Decimal(0);
 	if (game.achievements[6])
@@ -1030,7 +1031,7 @@ function combineSquares() {
 	if (!game.achievements[16] && game.shards.value.gte(5))
 		getAchievement(16);
 	game.squares.value = game.squares.value.add(amount);
-	
+
 	game.triangles.bought = new Decimal(0);
 	if (game.achievements[6])
 		game.triangles.bought = new Decimal(10);
@@ -1103,7 +1104,7 @@ function constructPyramid() {
 				eBlockContainer.setAttribute('class', 'col-1');
 				var blockSquareCost = Decimal.pow(10, blockCounter-1);
 				var blockCost = blockSquareCost.mul(10);
-				if (blockCounter <= 1) 
+				if (blockCounter <= 1)
 					eBlockContainer.setAttribute('data-content', format('Block #{0}:<br/>Each square costs {1} ▢. Full cost: {2} ▢<br/><b>Reward for completing the whole block row:</b><br/>▢ gain from Combine x1.5 per completed pyramid block', blockCounter, formatValue(blockSquareCost,2), formatValue(blockCost,2)));
 				else if (blockCounter <= 3)
 					eBlockContainer.setAttribute('data-content', format('Block #{0}:<br/>Each square costs {1} ▢. Full cost: {2} ▢<br/><b>Reward for completing the whole block row:</b><br/>Triple ▫<sup>▫</sup><sub>□</sub> gain per purchase', blockCounter, formatValue(blockSquareCost,2), formatValue(blockCost,2)));
@@ -1115,7 +1116,7 @@ function constructPyramid() {
 					eBlockContainer.setAttribute('data-content', format('Block #{0}:<br/>Each square costs {1} ▢. Full cost: {2} ▢<br/><b>Reward for completing the whole block row:</b><br/>???', blockCounter, formatValue(blockSquareCost,2), formatValue(blockCost,2)));
 				else if (blockCounter <= 21)
 					eBlockContainer.setAttribute('data-content', format('Block #{0}:<br/>Each square costs {1} ▢. Full cost: {2} ▢<br/><b>Reward for completing the whole block row:</b><br/>???', blockCounter, formatValue(blockSquareCost,2), formatValue(blockCost,2)));
-				
+
 				var eBlock = document.createElement('div');
 				if (game.squares.simplePyramid) {
 					eBlock.innerHTML = block + '&nbsp;';
@@ -1163,7 +1164,7 @@ function pyramidFillBlock() {
 			pyramidAddRow();
 			pyramidFillBlock();
 		}
-		
+
 		let squareCost = 10**(blockTotalNum-1);
 		let canFill = Decimal.min(game.squares.value.div(squareCost).floor(), 10 - row[block]).toNumber();
 		game.squares.value = game.squares.value.sub(canFill * squareCost);
@@ -1213,7 +1214,7 @@ function tick() {
 			game.resource = game.resource.add(game.triangles.income);
 		update();
 	}
-	
+
 	let tickspeed = 675;
 	if (checkUpgrade('flip', 0))
 		tickspeed /= 1.5;
@@ -1297,12 +1298,13 @@ function loadGame(game, log = true) {
 		game.triangles.income = new Decimal(1);
 		game.achievements = [];
 		game.log = [];
-		
+
 		game.version = 21;
 		saveGame(true);
 		tick();
 		//loadGame(false);
-	} else {
+	}
+	else {
 		let savegame = JSON.parse(save);
 		if (savegame.version < 14) {
 			hardReset();
@@ -1371,13 +1373,14 @@ function loadGame(game, log = true) {
 			game.shards = savegame.shards;
 			game.shards.value = Decimal.fromString(game.shards.value);
 			game.shards.bought = Decimal.fromString(game.shards.bought);
-		} else if (checkUpgrade('flip', 3)) {
+		}
+		else if (checkUpgrade('flip', 3)) {
 			revealShards();
 			game.shards = {};
 			game.shards.value = new Decimal(0);
 			game.shards.bought = new Decimal(0);
 		}
-		
+
 		if (typeof(game.shards) != 'undefined') {
 			if (typeof(game.shards.auto) != 'undefined') {
 				$('#shardsAutobuyContainer').show();
@@ -1416,7 +1419,7 @@ function loadGame(game, log = true) {
 				}
 			};
 		}
-		
+
 		//squares
 		if (typeof(savegame.squares) != 'undefined') {
 			game.squares = savegame.squares;

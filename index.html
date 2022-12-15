@@ -1,19 +1,28 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 	<title>Megiston Incremental</title>
+	<meta content="text/html">
+	<meta charset="UTF-8">
+	<!--
 	<link rel="stylesheet" href="lib/bootstrap.min.css">
 	<link rel="stylesheet" href="index.css">
-	
+
 	<script src="lib/jquery-3.4.1.min.js"></script>
 	<script src="lib/popper.min.js"></script>
 	<script src="lib/bootstrap.min.js"></script>
 	<script src="lib/break_eternity.js"></script>
 	<script src="game.js"></script>
+
+	onload="initPops(); saveNewGameState(); loadGame(game);"
+	-->
+	<script src="/dist/main.js"></script>
 </head>
-<body onload="initPops(); saveNewGameState(); loadGame(game);">
+
+<body>
 	<div class="d-flex justify-content-center"><div id="plus">+</div></div>
 	<div class="wipe-transition"></div>
+
 	<div id="root" class="container">
 		<div class="d-flex justify-content-between">
 			<div class="col">
@@ -25,7 +34,7 @@
 				</button>
 			</div>
 			<div class="col">
-				<button id="flipButton" class="btn btn-primary btn-lg" style="display:none" type="button" onclick="flip();" />
+				<button id="flipButton" class="btn btn-primary btn-lg" style="display:none" type="button" onclick="flip();"></button>
 			</div>
 		</div>
 		<div class="d-flex justify-content-between">
@@ -57,7 +66,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Shapes -->
 		<div id="Shapes" class="tabcontent" style="display:block;">
 			<form class="form-inline">
@@ -65,33 +74,33 @@
 					<div class="input-group-prepend">
 						<span id="trianglesLabel" class="input-group-text input-group-digits input-group-title" data-trigger="hover" data-toggle="popover" data-placement="bottom" data-html="true" data-content="<b>Triangle</b><br/>Main income operator">▲</span>
 					</div>
-					<input id="triangles" type="text" class="form-control form-input" style="text-align: center;" disabled="true">
+					<input id="triangles" type="text" class="form-control form-input" style="text-align: center;" disabled="disabled">
 					<div class="input-group-append">
 						<button id="trianglesBuyAmount" class="btn btn-group btn-inline" type="button" onclick="buy('triangles');">+0.1</button>
 						<button id="trianglesBuyMax" class="btn btn-group btn-inline" type="button" onclick="buyMax('triangles');">Buy Max</button>
 						<div id="trianglesAutobuyContainer" class="input-group-text" style="display:none" onclick="switchAutobuy('triangles');  return true;">
 							<input id="trianglesAutobuy" type="checkbox" onclick="return true;"> Auto
 						</div>
-						<span id="trianglesCost" class="input-group-text input-group-digits" style="text-align: center" disabled="true" >Cost: 10</span>
-						<span id="trianglesIncome" class="input-group-text input-group-digits" style="text-align: center; background-color:#eee;" disabled="true" >1</span>
+						<span id="trianglesCost" class="input-group-text input-group-digits" style="text-align: center">Cost: 10</span>
+						<span id="trianglesIncome" class="input-group-text input-group-digits" style="text-align: center; background-color:#eee;">1</span>
 					</div>
 				</div>
-				
+
 			</form>
 			<form id="shardsContainer" style="display:none" class="form-inline">
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
 						<span id="shardsLabel" class="input-group-text input-group-digits input-group-title" data-trigger="hover" data-toggle="popover" data-placement="bottom" data-html="true" data-content="<b>Shard</b><br/>Increases ▲ index and cost, reduces amount per purchase by 0.04 (minimum 0.01)">▫<sup>▫</sup><sub>□</sub></span>
-						
+
 					</div>
-					<input id="shards" type="text" class="form-control form-input" style="text-align: center;" disabled="true" />
+					<input id="shards" type="text" class="form-control form-input" style="text-align: center;" disabled="disabled" />
 					<div class="input-group-append">
 						<button id="shardsBuyAmount" class="btn btn-group btn-inline" type="button" onclick="buy('shards');">+1</button>
-						<button id="shardsBuyMax" class="btn btn-group btn-inline" type="button" onclick="buyMax('shards');" disabled="true">Buy Max</button>
+						<button id="shardsBuyMax" class="btn btn-group btn-inline" type="button" onclick="buyMax('shards');" disabled="disabled">Buy Max</button>
 						<div id="shardsAutobuyContainer" class="input-group-text" style="display:none" onclick="switchAutobuy('shards');  return true;">
 							<input id="shardsAutobuy" type="checkbox" onclick="return true;"> Auto
 						</div>
-						<span id="shardsCost" class="input-group-text input-group-digits justify-content-center" style="text-align: center" disabled="true"></span>
+						<span id="shardsCost" class="input-group-text input-group-digits justify-content-center" style="text-align: center"></span>
 					</div>
 				</div>
 			</form>
@@ -100,12 +109,12 @@
 					<div class="input-group-prepend">
 						<span id="cutSquaresLabel" class="input-group-text input-group-digits" style="font-size:17px;" data-trigger="hover" data-toggle="popover" data-placement="bottom" data-html="true" data-content="<b>Lozenge</b><br/>Increases base ▲ index directly">◊</span>
 					</div>
-					<input id="cutSquares" type="text" class="form-control form-input" style="text-align: center;" disabled="true" />
+					<input id="cutSquares" type="text" class="form-control form-input" style="text-align: center;" disabled="disabled" />
 					<div class="input-group-append">
 						<button id="cutSquaresBuyAmount" class="btn btn-group btn-inline" type="button" onclick="buy('cut');">Buy 0.50</button>
 						<button id="cutSquaresBuyMax" class="btn btn-group btn-inline" type="button" onclick="buyMax('cut');">Buy Max</button>
-						<span id="cutSquaresCost" class="input-group-text input-group-digits" style="text-align: center" disabled="true" >Cost: 1</span>
-						<span id="cutSquaresIncome" class="input-group-text input-group-digits" style="text-align: center; background-color:#eee;" disabled="true" >1</span>
+						<span id="cutSquaresCost" class="input-group-text input-group-digits" style="text-align: center">Cost: 1</span>
+						<span id="cutSquaresIncome" class="input-group-text input-group-digits" style="text-align: center; background-color:#eee;">1</span>
 					</div>
 				</div>
 			</form>
@@ -114,15 +123,15 @@
 					<div class="input-group-prepend">
 						<span id="triangles2Label" class="input-group-text input-group-digits input-group-title" data-trigger="hover" data-toggle="popover" data-placement="bottom" data-html="true" data-content="<b>Star</b><br/>Multiplies ▲ value and cost">☆</span>
 					</div>
-					<input id="triangles2" type="text" class="form-control form-input" style="text-align: center;" disabled="true">
+					<input id="triangles2" type="text" class="form-control form-input" style="text-align: center;" disabled="disabled">
 					<div class="input-group-append">
 						<button id="triangles2BuyAmount" class="btn btn-group btn-inline" type="button" onclick="buy('triangles2');">+0.1</button>
 						<button id="triangles2BuyMax" class="btn btn-group btn-inline" type="button" onclick="buyMax('triangles2');">Buy Max</button>
 						<div id="triangles2AutobuyContainer" class="input-group-text" style="display:none" onclick="switchAutobuy('triangles2');  return true;">
 							<input id="triangles2Autobuy" type="checkbox" onclick="return true;"> Auto
 						</div>
-						<span id="triangles2Cost" class="input-group-text input-group-digits" style="text-align: center" disabled="true" >Cost: 10</span>
-						<span id="triangles2Income" class="input-group-text input-group-digits" style="text-align: center; background-color:#eee;" disabled="true" >1</span>
+						<span id="triangles2Cost" class="input-group-text input-group-digits" style="text-align: center">Cost: 10</span>
+						<span id="triangles2Income" class="input-group-text input-group-digits" style="text-align: center; background-color:#eee;">1</span>
 					</div>
 				</div>
 			</form>
@@ -130,7 +139,7 @@
 			<div id="shapesInfo">
 				Triangle operator ▲(a)  = a<sup>a</sup>. Example: ▲(3) = 3<sup>3</sup> = 27
 				<div id="squareExplain" style="display:none">
-					<!--br>	
+					<!--br>
 					Square operator  ▢(a)  = a in a triangles. Example: ▢(2) = ▲(▲(2)) = (2<sup>2</sup>)<sup>2<sup>2</sup></sup> = 4<sup>4</sup> = 256<br-->
 					<br>
 					Square shards ▫<sup>▫</sup><sub>□</sub> only add a fraction of a triangle operation (index):<br>
@@ -143,7 +152,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Flip -->
 		<div id="Flip" class="tabcontent" style="display:none;">
 			<div class="d-flex justify-content-between">
@@ -295,7 +304,7 @@
 				Upgrades listed as <i>Permanent</i> can not be reset
 			</div>
 		</div>
-		
+
 		<!-- Pyramid -->
 		<div id="Pyramid" class="tabcontent" style="display:none;">
 			<div class="d-flex justify-content-between">
@@ -310,7 +319,7 @@
 			<div class="row justify-content-md-center upgrade-row">
 				<button id="fillPyramidBlock" type="button" class="btn btn-secondary upgrade-row" onclick="pyramidFillBlock()">Fill pyramid block</button>
 			</div>
-			<div id="pyramidContainer" class="upgrade-row" style="font-size: 12px; text-shadow:0px 3px 7px #3f4d3c44;"></div>
+			<div id="pyramidContainer" class="upgrade-row" style="font-size: 12px; text-shadow:0 3px 7px #3f4d3c44;"></div>
 			<div id="pyramidUpgRow1" class="row justify-content-md-center upgrade-row">
 				<div class="col col-3">
 					<button id="pyramidUpg1" type="button" class="btn btn-outline-secondary" disabled>
@@ -360,7 +369,7 @@
 				Get bonuses for each full row. Tap/Mouse over pyramid block to find out about cost and rewards
 			</div>
 		</div>
-		
+
 		<!-- Achievements -->
 		<div id="Achievements" class="tabcontent" style="display:none;">
 			<h3 class="page-header">Some achivements have unique bonuses, tap/mouse over to find out</h3>
@@ -396,7 +405,7 @@
 					</div>
 				</div>
 			</div>
-			<div id="postHfAch" class="row justify-content-md-left">
+			<div class="row justify-content-md-left">
 				<div class="col col-2">
 					<div class="achievement" data-trigger="hover" data-toggle="popover" data-placement="bottom" data-html="true" data-content="Reach 1.78e308 resource after half-flip<br><b>Reward:</b><br>Start with ▲ purchased 10 times">
 						<div id="ach6" type="button" class="btn btn-outline-primary achievement" style="pointer-events: none;">Through the roof</div>
@@ -428,7 +437,7 @@
 					</div>
 				</div>
 			</div>
-			<div id="postHfAch" class="row justify-content-md-left">
+			<div class="row justify-content-md-left">
 				<div class="col col-2">
 					<div data-trigger="hover" data-toggle="popover" data-placement="bottom" data-html="true" data-content="Combine with 0 times flipped<br/><b>Reward:</b><br/>Don't reset flip upgrades on combine">
 						<div id="ach12" type="button" class="btn btn-outline-primary achievement" style="pointer-events: none;">Like a Pro</div>
@@ -461,18 +470,18 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<!-- Logs -->
 		<div id="Logs" class="tabcontent" style="display:none;"></div>
-		
+
 		<div class="text-center" style="margin:10px;">
 			<button id="saveButton" class="btn btn-success btn-lg" type="button" onclick="saveGame();">Save game</button>
 			<!--button id="shardsButton" class="btn btn-primary btn-lg" style="display:none" type="button" onclick="buys('shards');" /-->
 		</div>
 	</div>
-	
-	
-	<div class="modal fade" id="combineSquareConfirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+	<div class="modal fade" id="combineSquareConfirm" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-body">
@@ -485,6 +494,7 @@
 			</div>
 		</div>
 	</div>
-	<div id="notify" class="notify" style="top: 0px; left: 0px;"></div>
+
+	<div id="notify" class="notify" style="top: 0; left: 0;"></div>
 </body>
 </html>
