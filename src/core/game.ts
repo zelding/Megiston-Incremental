@@ -1,5 +1,6 @@
 import {Popover, Dropdown} from "bootstrap";
 import Decimal from 'break_eternity.js';
+import Runner from "./runner";
 
 class Shape {
     public value  : Decimal;
@@ -16,7 +17,7 @@ class Shape {
 }
 
 class Ascension {
-
+    public value: Decimal;
 }
 
 class ShapesCollection {
@@ -24,6 +25,11 @@ class ShapesCollection {
     public shards : Shape
     public prisms : Shape
     public stars : Shape
+}
+
+class Ascensions {
+    public flip: Ascension;
+    public combine: Ascension;
 }
 
 enum Achievements {
@@ -48,16 +54,6 @@ enum Achievements {
 }
 
 class GameData {
-    /*game.resource = new Decimal(0);
-    game.triangles = {};
-    game.triangles.value = new Decimal(0);
-    game.triangles.bought = new Decimal(0);
-    game.triangles.income = new Decimal(1);
-    game.achievements = [];
-    game.log = [];
-
-    game.version = 21;*/
-
     public readonly version : number;
 
     protected resources : object = {
@@ -73,10 +69,7 @@ class GameData {
 
     protected shapes: ShapesCollection;
 
-    protected ascensions: object = {
-        flip    : new Ascension(),
-        combine : new Ascension()
-    };
+    protected ascensions: Ascensions;
 
     constructor(version: number = 21) {
         this.shapes  = new ShapesCollection();
@@ -103,27 +96,48 @@ class GameData {
             },
             flip: {
                 flipMultAuto: false,
-                flipped: this.ascensions.flip,
+                flipped: this.ascensions.flip.value,
                 value: 0,
                 upgrades: [],
                 flipMulti: 0
+            },
+            squares: {
+                combined: this.ascensions.combine,
+                upgrades: [],
+                value: this.ascensions.combine.value
             }
         };
     }
 }
 
-// {"resource":"16","triangles":{"value":"1","bought":"0","income":"2"},"flip":{"flipped":"1","value":"1","upgrades":[],"flipMulti":"0"},"achievements":[true],"log":["Flipping resets all resource and ▲. Upgrades and achievements will not reset","Get 1e3 resource to flip","Achievement unlocked: Meaningful start"],"version":21}
 export class Game {
+    public readonly startedAt: number
+
     protected gameData: GameData;
 
+    protected totalTime: number;
+
     constructor(saveData: SaveGame | null) {
-        this.gameData = saveData;
+        this.gameData  = saveData;
+        this.startedAt = performance.now();
     }
 
     public initPops(): void {
         console.log("here");
         document.querySelectorAll('[data-toggle="popover"]').forEach( el => new Popover(el) );
         document.querySelectorAll('[data-toggle="dropdown"]').forEach( el => new Dropdown(el) );
+    }
+
+    public tick(timeStep: number): void {
+        console.debug(timeStep);
+
+        //this.gameData.resourcues
+
+        this.totalTime += timeStep;
+    }
+
+    public updateLayout(): void {
+        document.querySelector('#fps_dsp').innerHTML = Runner.fps.toString() + " fps";
     }
 }
 

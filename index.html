@@ -5,21 +5,15 @@
 	<meta content="text/html">
 	<meta charset="UTF-8">
 	<!--
-	<link rel="stylesheet" href="lib/bootstrap.min.css">
-	<link rel="stylesheet" href="index.css">
-
-	<script src="lib/jquery-3.4.1.min.js"></script>
-	<script src="lib/popper.min.js"></script>
-	<script src="lib/bootstrap.min.js"></script>
-	<script src="lib/break_eternity.js"></script>
-	<script src="game.js"></script>
-
 	onload="initPops(); saveNewGameState(); loadGame(game);"
 	-->
+	<link rel="stylesheet" href="/dist/main.css">
 	<script src="/dist/main.js"></script>
+	<script src="/dist/service-worker.js"></script>
 </head>
 
 <body>
+	<span id="fps_dsp">-1 fps</span>
 	<div class="d-flex justify-content-center"><div id="plus">+</div></div>
 	<div class="wipe-transition"></div>
 
@@ -475,7 +469,8 @@
 		<div id="Logs" class="tabcontent" style="display:none;"></div>
 
 		<div class="text-center" style="margin:10px;">
-			<button id="saveButton" class="btn btn-success btn-lg" type="button" onclick="saveGame();">Save game</button>
+			<button id="saveButton" class="btn btn-success btn-lg" type="button">Save game</button>
+			<button id="game_toggle_button" class="btn btn-success btn-lg" type="button">Start game</button>
 			<!--button id="shardsButton" class="btn btn-primary btn-lg" style="display:none" type="button" onclick="buys('shards');" /-->
 		</div>
 	</div>
