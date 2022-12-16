@@ -6,3 +6,9 @@ todo.md
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+/node_modules
+/src/**/**.js
+/dist/main.js
+/dist/main.css
+/dist/service-worker.js
+/dist/workbox-*.js
