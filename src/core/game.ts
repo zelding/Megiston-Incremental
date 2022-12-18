@@ -71,7 +71,7 @@ class GameData {
 
     protected ascensions: Ascensions;
 
-    constructor(version: number = 21) {
+    public constructor(version: number = 21) {
         this.shapes  = new ShapesCollection();
         this.version = version;
     }
@@ -137,7 +137,7 @@ export class Game {
     }
 
     public updateLayout(): void {
-        document.querySelector('#fps_dsp').innerHTML = Runner.fps.toString() + " fps";
+        document.querySelector('#fps_dsp').innerHTML = Runner.fps.toString() + " fps " + Math.round(Runner.getDelta()) + " ms";
     }
 }
 

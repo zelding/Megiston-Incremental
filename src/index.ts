@@ -1,5 +1,4 @@
 import './app.sass'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import {Game, SaveGame} from './core/game';
 import Runner from './core/runner';
 
@@ -17,6 +16,7 @@ document.addEventListener('readystatechange', (e) => {
     game.initPops();
 
     document.querySelector('#game_toggle_button').addEventListener('click', (e) => {
+        console.debug(e);
         let btn = this ?? document.querySelector('#game_toggle_button');
         if (Runner.isRunning() ) {
             Runner.stop();

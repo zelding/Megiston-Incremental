@@ -12,6 +12,8 @@ export default class Runner {
 
     private static stopping: boolean = false;
 
+    private constructor() {}
+
     public static setGame(game: Game) {
         Runner.game = game;
     }
@@ -31,6 +33,10 @@ export default class Runner {
 
     public static isRunning(): boolean {
         return Runner.currentLoopId !== null;
+    }
+
+    public static getDelta(): number {
+        return Runner.delta;
     }
 
     public static loop(time: number): void {
