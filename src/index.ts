@@ -3,15 +3,12 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import {Game, SaveGame} from './core/game';
 import Runner from './core/runner';
 
-const saveData = window.localStorage[ SaveGame.STORAGE_KEY ];
-
+const saveData = window.localStorage[ SaveGame.STORAGE_KEY ] ?? "{}";
 
 // Launch
-const save   = new SaveGame(saveData);
-const game   = new Game(save);
-//const runner = new Runner();
+const save = new SaveGame(saveData);
+const game = new Game(save);
 Runner.setGame(game);
-//Runner.start();
 
 document.addEventListener('readystatechange', (e) => {
     console.debug(e);

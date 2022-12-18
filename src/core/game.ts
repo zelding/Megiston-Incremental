@@ -157,15 +157,17 @@ export class SaveGame extends GameData {
     }
 
     protected load(saveData: any|object) {
-        this.logs = saveData.logs;
-        this.achievements = saveData.achievements;
+        this.logs         = saveData.logs         ?? [];
+        this.achievements = saveData.achievements ?? [];
 
-        this.shapes.triangles = new Shape(
-            saveData.triangles.value,
-            saveData.triangles.bought,
-            saveData.triangles.income
-        );
-        this.shapes.triangles.auto = !!saveData.triangles.auto;
+        if ( saveData.triangles ) {
+            this.shapes.triangles = new Shape(
+                saveData.triangles.value,
+                saveData.triangles.bought,
+                saveData.triangles.income
+            );
+            this.shapes.triangles.auto = !!saveData.triangles.auto;
+        }
 
     }
 
