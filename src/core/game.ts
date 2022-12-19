@@ -1,6 +1,8 @@
 import {Popover, Dropdown} from "bootstrap";
 import Decimal from 'break_eternity.js';
 import Runner from "./runner";
+import './../settings';
+import {CURRENT_SAVE_VERSION, TRIANGLE_INCOME_START} from "../settings";
 
 class Shape {
     public value  : Decimal;
@@ -9,7 +11,7 @@ class Shape {
 
     public auto: boolean = false;
 
-    constructor(value: string, bought: string, income: string) {
+    public constructor(value: string, bought: string, income: string) {
         this.value  = new Decimal(value);
         this.bought = new Decimal(bought);
         this.income = new Decimal(income);
@@ -18,18 +20,29 @@ class Shape {
 
 class Ascension {
     public value: Decimal;
+
+    public constructor() {
+        this.value = new Decimal(0);
+    }
 }
 
 class ShapesCollection {
-    public triangles : Shape
-    public shards : Shape
-    public prisms : Shape
-    public stars : Shape
+    public readonly triangles : Shape
+    public readonly shards : Shape
+    public readonly prisms : Shape
+    public readonly stars : Shape
+
+    public constructor(t: Shape|null = null, s: Shape|null = null, pr: Shape|null = null, st: Shape|null = null) {
+        this.triangles =  t ?? new Shape("0", "0", TRIANGLE_INCOME_START.toString());
+        this.shards    =  s ?? new Shape("0", "0", "0");
+        this.prisms    = pr ?? new Shape("0", "0", "0");
+        this.stars     = st ?? new Shape("0", "0", "0");
+    }
 }
 
 class Ascensions {
-    public flip: Ascension;
-    public combine: Ascension;
+    public flip: Ascension|null = null;
+    public combine: Ascension|null = null;
 }
 
 enum Achievements {
@@ -53,7 +66,7 @@ enum Achievements {
     "That's a triangle too"
 }
 
-class GameData {
+abstract class GameData {
     public readonly version : number;
 
     protected resources : object = {
@@ -62,51 +75,81 @@ class GameData {
         squares   : new Decimal(0),
     };
 
-    protected upgrades : boolean[];
+    protected upgrades : boolean[] = [];
 
     protected achievements: boolean|null[] = [];
     protected logs : string[] = [];
 
-    protected shapes: ShapesCollection;
+    protected shapes: ShapesCollection|undefined;
 
     protected ascensions: Ascensions;
+    protected  totalTime: number = 0;
 
-    public constructor(version: number = 21) {
-        this.shapes  = new ShapesCollection();
-        this.version = version;
+    protected constructor(version: number = 21, data: any|null) {
+        this.version    = version;
+        this.ascensions = new Ascensions();
+
+        if ( data ) {
+            this.loadJSON(data);
+        }
     }
+
+    protected abstract loadJSON(saveData: any|object): void;
 
     /**
      * @override
      */
     public toJSON(): object {
-        return {
+        let returnData = {
             version: this.version,
             achievements: this.achievements,
-            log: this.logs,
-            triangles: {
-                value: this.shapes.triangles.value,
-                bought: this.shapes.triangles.bought,
-                income: this.shapes.triangles.income
-            },
-            shards: {
-                auto: this.shapes.shards.auto,
-                bought: this.shapes.shards.bought,
-                value: this.shapes.shards.value
-            },
-            flip: {
-                flipMultAuto: false,
-                flipped: this.ascensions.flip.value,
-                value: 0,
-                upgrades: [],
-                flipMulti: 0
-            },
-            squares: {
-                combined: this.ascensions.combine,
-                upgrades: [],
-                value: this.ascensions.combine.value
-            }
+            log: this.logs
         };
+
+        if ( this.shapes ) {
+            let extra = {
+                triangles: {
+                    value: this.shapes.triangles.value,
+                    bought: this.shapes.triangles.bought,
+                    income: this.shapes.triangles.income
+                },
+                shards: {
+                    auto: this.shapes.shards.auto,
+                    bought: this.shapes.shards.bought,
+                    value: this.shapes.shards.value
+                },
+                flip: {
+                    flipMultAuto: false,
+                    flipped: this.ascensions && this.ascensions.flip ? this.ascensions.flip.value : null,
+                    value: 0,
+                    upgrades: [],
+                    flipMulti: 0
+                },
+                squares: {
+                    combined: this.ascensions.combine,
+                    upgrades: [],
+                    value: this.ascensions && this.ascensions.combine ? this.ascensions.combine.value : null
+                }
+            };
+
+            returnData = {...returnData, ...extra};
+        }
+
+        return returnData;
+    }
+}
+
+class NewGameData extends GameData
+{
+    public constructor(version: number = 21) {
+        super(version, null);
+
+        this.totalTime  = 0;
+        this.ascensions = new Ascensions();
+    }
+
+    protected loadJSON(saveData: any): void {
+        this.shapes = new ShapesCollection();
     }
 }
 
@@ -115,11 +158,17 @@ export class Game {
 
     protected gameData: GameData;
 
-    protected totalTime: number;
+    protected totalTime: number = 0;
 
-    constructor(saveData: SaveGame | null) {
-        this.gameData  = saveData;
+    public constructor(saveData: SaveGame|null) {
         this.startedAt = performance.now();
+
+        if ( saveData ) {
+            this.gameData = saveData;
+        }
+        else {
+            this.gameData = new NewGameData(CURRENT_SAVE_VERSION);
+        }
     }
 
     public initPops(): void {
@@ -137,7 +186,11 @@ export class Game {
     }
 
     public updateLayout(): void {
-        document.querySelector('#fps_dsp').innerHTML = Runner.fps.toString() + " fps " + Math.round(Runner.getDelta()) + " ms";
+        const el = document.querySelector('#fps_dsp');
+
+        if (el) {
+            el.innerHTML = Runner.fps.toString() + " fps " + Math.round(Runner.getDelta()) + " ms";
+        }
     }
 }
 
@@ -151,24 +204,56 @@ export class SaveGame extends GameData {
             throw new Error("Malformed JSON");
         }
 
-        super(parsed.version);
-
-        this.load(parsed);
+        super(parsed.version, parsed);
     }
 
-    protected load(saveData: any|object) {
+    protected loadJSON(saveData: any|object): void {
         this.logs         = saveData.logs         ?? [];
         this.achievements = saveData.achievements ?? [];
 
+        let t, s, pr, st : Shape|null = null;
+
         if ( saveData.triangles ) {
-            this.shapes.triangles = new Shape(
+            t = new Shape(
                 saveData.triangles.value,
                 saveData.triangles.bought,
                 saveData.triangles.income
             );
-            this.shapes.triangles.auto = !!saveData.triangles.auto;
+
+            t.auto = saveData.triangles.auto;
         }
 
+        if ( saveData.shards ) {
+            s = new Shape(
+                saveData.shards.value,
+                saveData.shards.bought,
+                saveData.shards.income
+            );
+
+            s.auto = saveData.shards.auto;
+        }
+
+        if ( saveData.prisms ) {
+            pr = new Shape(
+                saveData.prisms.value,
+                saveData.prisms.bought,
+                saveData.prisms.income
+            );
+
+            pr.auto = saveData.prisms.auto;
+        }
+
+        if ( saveData.stars ) {
+            st = new Shape(
+                saveData.stars.value,
+                saveData.stars.bought,
+                saveData.stars.income
+            );
+
+            st.auto = saveData.stars.auto;
+        }
+
+        this.shapes = new ShapesCollection(t, s, pr, st);
     }
 
     public save() :void {

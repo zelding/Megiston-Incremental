@@ -5,29 +5,39 @@ export default class Runner {
     public static fps: number = 0.0;
 
     protected static game: Game;
-    protected static currentLoopId: number | null = null;
+    protected static currentLoopId: number|null = null;
 
     private static delta: number = 0.0;
     private static previousTime: number = 0.0;
 
     private static stopping: boolean = false;
 
-    private constructor() {}
+    static {
+
+    }
 
     public static setGame(game: Game) {
         Runner.game = game;
     }
 
     public static stop(): void {
-        console.debug("stopped");
         Runner.stopping = true;
-        window.cancelAnimationFrame(Runner.currentLoopId);
-        Runner.currentLoopId = null;
+
+        if ( null !== Runner.currentLoopId ) {
+            window.cancelAnimationFrame(Runner.currentLoopId);
+            Runner.currentLoopId = null;
+            console.debug("stopped");
+        }
     }
 
     public static start(time: number = 0.0) : void {
         console.debug("started");
-        Runner.stopping = false;
+
+        if ( Runner.stopping && null !== Runner.currentLoopId ) {
+            Runner.stopping = false;
+            return;
+        }
+
         Runner.currentLoopId = window.requestAnimationFrame(Runner.loop);
     }
 

@@ -15,21 +15,22 @@ document.addEventListener('readystatechange', (e) => {
 
     game.initPops();
 
-    document.querySelector('#game_toggle_button')
-            .addEventListener('click', (e: Event) => {
-        console.debug(e, this);
-        const btn: HTMLElement = this;
+    const btn = document.querySelector('#game_toggle_button');
 
-        if (Runner.isRunning() ) {
-            Runner.stop();
+    if ( btn ) {
+        btn.addEventListener('click', (e: Event) => {
+            console.debug(e, this);
+            if (Runner.isRunning()) {
+                Runner.stop();
 
-            btn.innerHTML = "Start game";
-            return;
-        }
+                btn.innerHTML = "Start game";
+                return;
+            }
 
-        btn.innerHTML = "Stop game";
-        Runner.start();
-    });
+            btn.innerHTML = "Stop game";
+            Runner.start();
+        });
+    }
 });
 
 
