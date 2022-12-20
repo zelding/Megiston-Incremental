@@ -10,10 +10,10 @@
   },
   "exclude": [
     "dist",
+    "lib",
     "node_modules",
     "src/**/*.test.tsx",
     "src/**/*.stories.tsx",
-  ],
-  "include": [".yarn/cache/*.zip"],
-  "files": ["src/index.ts"]
+    "game.js"
+  ]
 }

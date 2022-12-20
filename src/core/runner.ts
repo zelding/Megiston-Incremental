@@ -21,13 +21,8 @@ export default class Runner {
     }
 
     public static stop(): void {
+        // basically we let the last loop finish
         Runner.stopping = true;
-
-        if ( null !== Runner.currentLoopId ) {
-            window.cancelAnimationFrame(Runner.currentLoopId);
-            Runner.currentLoopId = null;
-            console.debug("stopped");
-        }
     }
 
     public static start(time: number = 0.0) : void {
@@ -79,5 +74,7 @@ export default class Runner {
         }
 
         Runner.stopping = false;
+        Runner.currentLoopId = null;
+        console.debug("stopped");
     }
 }
